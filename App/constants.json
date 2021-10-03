@@ -1,0 +1,8 @@
+{
+    "BACKEND_INDEX_URL" : "http://theconnections.in/Connections/index.php",
+    "BACKEND_HARDCODED_FILTERDATA_URL" : "http://theconnections.in/Connections/data.json",
+    "BACKEND_PATH" : "http://theconnections.in/Connections/",
+    "THEME_COLOR": "#00af91",
+    "TERMS_AND_CONDITIONS_URL": "https://www.privacypolicygenerator.info/sample-terms-conditions-template/quora-terms-service-introduction.jpg",
+    "DOWNLOAD_LIMIT": 5
+}
