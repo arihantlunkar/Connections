@@ -2,7 +2,7 @@
 abstract class Constants {
     const DB_HOST = 'theconnections.in';
     const DB_USER = 'admin';
-    const DB_PASS = '';//Password in drive
+    const DB_PASS = '';
     const DB_NAME = 'Connections';
     const SUCCESS = 1;
     const FAILURE = 0;

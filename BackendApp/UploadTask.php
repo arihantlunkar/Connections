@@ -40,75 +40,15 @@ class UploadTask extends Task
 	
 	private function isFakeUser() : bool
 	{
-		$stmt = $this->mConnection->prepare('SELECT * FROM `users` where id=?');
-		if (false === $stmt) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'DB error',
-				1005,
-				'Syntax error or missing privileges error => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$bindResult = $stmt->bind_param('s', $this->mJSONDecodedPOSTData->fromID);
-		if (false === $bindResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Corrupt data',
-				2001,
-				'Bind failed. Possible reason could be inserted data is corrupted => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$executeResult = $stmt->execute();
-		if (false === $executeResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Internet connection error',
-				2002,
-				'Tripping over the network cable => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$result = $stmt->get_result();
-		$stmt->close();
-		return $result->num_rows <= 0;
+		$result = $this->mConnection->query("SELECT * FROM `users` where id='".$this->mJSONDecodedPOSTData->fromID."'");
+		if($result && $result->num_rows >= 0)
+		    return false;
+		return true;
 	}
 	private function isUploadLimitReached() : bool
 	{
-		$stmt = $this->mConnection->prepare('SELECT * FROM `upload` WHERE `fromID` = ? and uploadTime >= Date_sub(now(),interval 1 hour)');
-		if (false === $stmt) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'DB error',
-				1005,
-				'Syntax error or missing privileges error => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$bindResult = $stmt->bind_param('i', $this->mJSONDecodedPOSTData->fromID);
-		if (false === $bindResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Corrupt data',
-				2001,
-				'Bind failed. Possible reason could be inserted data is corrupted => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$executeResult = $stmt->execute();
-		if (false === $executeResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Internet connection error',
-				2002,
-				'Tripping over the network cable => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$result = $stmt->get_result();
-		$stmt->close();
-		if ($result->num_rows >= Constants::UPLOAD_LIMIT) {
+		$result = $this->mConnection->query("SELECT * FROM `upload` WHERE `fromID` = '".$this->mJSONDecodedPOSTData->fromID."' and uploadTime >= Date_sub(now(),interval 1 hour)");
+		if ($result && $result->num_rows >= Constants::UPLOAD_LIMIT) {
 			return true;
 		}
 		return false;

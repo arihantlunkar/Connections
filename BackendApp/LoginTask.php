@@ -34,39 +34,8 @@ class LoginTask extends Task
 	}
 	private function updateIfExists() : bool
 	{
-		$stmt = $this->mConnection->prepare('SELECT * FROM `users` where socialMedia=? and socialMediaID=?');
-		if (false === $stmt) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'DB error',
-				1005,
-				'Syntax error or missing privileges error => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$bindResult = $stmt->bind_param('ss', $this->mJSONDecodedPOSTData->socialMedia, $this->mJSONDecodedPOSTData->socialMediaID);
-		if (false === $bindResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Corrupt data',
-				2001,
-				'Bind failed. Possible reason could be inserted data is corrupted => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$executeResult = $stmt->execute();
-		if (false === $executeResult) {
-			throw new CustomMessage(
-				__class__,
-				Constants::FAILURE,
-				'Internet connection error',
-				2002,
-				'Tripping over the network cable => ' . htmlspecialchars($this->mConnection->error)
-			);
-		}
-		$result = $stmt->get_result();
-		$stmt->close();
-		if ($result->num_rows > 0) {
+		$result = $this->mConnection->query("SELECT * FROM `users` where socialMedia='".$this->mJSONDecodedPOSTData->socialMedia."' and socialMediaID='".$this->mJSONDecodedPOSTData->socialMediaID."'");
+		if ($result && $result->num_rows > 0) {
 			$row = $result->fetch_assoc();
 			
 			$stmt = $this->mConnection->prepare(
