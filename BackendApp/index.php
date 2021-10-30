@@ -1,8 +1,8 @@
 <?php
-//// number of seconds a script is allowed to run
+// number of seconds a script is allowed to run
 set_time_limit(60);
 // No errors should be shown. Only custom error pertaining to this app
-//error_reporting(0);
+error_reporting(0);
 if (!defined('ROOT_PATH')) {
 	define('ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
 }
