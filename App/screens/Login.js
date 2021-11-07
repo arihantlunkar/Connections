@@ -3,7 +3,6 @@ import { View, Dimensions, Text, Image } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-community/async-storage';
 import AppConstants from '../constants.json'
-import { Icon } from 'react-native-elements'
 import { LoginButton, AccessToken, GraphRequest, GraphRequestManager, LoginManager } from 'react-native-fbsdk';
 import { useIsFocused } from "@react-navigation/native";
  
@@ -25,7 +24,7 @@ const Login = ({route, navigation}) => {
     }
 
     const fbResponseCallback = (error, result) => {
-        if (error) 
+        if (error || null == result) 
         {
             LoginManager.logOut();
             setLoginClicked(false);
@@ -37,27 +36,16 @@ const Login = ({route, navigation}) => {
             const formData = new FormData();
             formData.append('task', 'login');
             formData.append('socialMedia', 'Facebook');
-            if(null !== result)
-            {
-                if(null !== result['id'])
-                    formData.append('socialMediaID', result['id']);
-                if(null !== result['name'])
-                    formData.append('name', result['name']);
-                if(null !== result['email'])
-                    formData.append('email', result['email']);
-                if(null !== result['picture'] && null !== result['picture']['data'] && null !== result['picture']['data']['url'])
-                    formData.append('pictureURL', result['picture']['data']['url']);
-            }
-            xhr.onerror = () => {
-                LoginManager.logOut();
-                setLoginClicked(false);
-                setSnackBarText('Error during login, try again.');
-            };
-            xhr.ontimeout = () => {
-                LoginManager.logOut();
-                setLoginClicked(false);
-                setSnackBarText('Connection to server timed out.');
-            };
+
+            if(null !== result['id'])
+                formData.append('socialMediaID', result['id']);
+            if(null !== result['name'])
+                formData.append('name', result['name']);
+            if(null !== result['email'])
+                formData.append('email', result['email']);
+            if(null !== result['picture'] && null !== result['picture']['data'] && null !== result['picture']['data']['url'])
+                formData.append('pictureURL', result['picture']['data']['url']);
+
             xhr.onload = () => {
                 const jsonResponse = JSON.parse(xhr.response);
                 if(null !== jsonResponse && null !== jsonResponse['code'] && (SUCCESS_CODE_INSERT == jsonResponse['code'] || SUCCESS_CODE_UPDATE == jsonResponse['code']))
@@ -72,7 +60,17 @@ const Login = ({route, navigation}) => {
                     setSnackBarText('Error during login, try again.');
                 }
             };
-            xhr.open('POST', AppConstants.BACKEND_INDEX_URL + '?' + Math.random().toString(36).slice(2) /*to avoid cache*/);
+            xhr.onerror = (error) => {
+                LoginManager.logOut();
+                setLoginClicked(false);
+                setSnackBarText(xhr.responseText);
+            };
+            xhr.ontimeout = () => {
+                LoginManager.logOut();
+                setLoginClicked(false);
+                setSnackBarText('Connection to server timed out.');
+            };
+            xhr.open('POST', AppConstants.BACKEND_INDEX_URL);
             xhr.setRequestHeader('Content-Type', 'multipart/form-data');
             xhr.timeout = 5000;
             xhr.send(formData);
@@ -124,7 +122,7 @@ const Login = ({route, navigation}) => {
                         {
                             setLoginClicked(true);
                             AccessToken.getCurrentAccessToken().then((data) => {
-                                AsyncStorage.setItem('FB_ACCESS_TOKEN', data["accessToken"]);
+                                AsyncStorage.setItem('FB_ACCESS_TOKEN', (data["accessToken"]));
                                 const processRequest = new GraphRequest(
                                     '/me?fields=id,name,picture.type(large),email',
                                     null,

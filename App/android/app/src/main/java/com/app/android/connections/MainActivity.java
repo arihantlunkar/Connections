@@ -1,4 +1,4 @@
-package com.connections;
+package com.app.android.connections;
 
 import com.facebook.react.ReactActivity;
 
