@@ -14,7 +14,7 @@ class LoginTask extends Task
 	}
 	protected function validateData() : void
 	{
-		if (empty($this->mJSONDecodedPOSTData->socialMedia)) {
+		/*if (empty($this->mJSONDecodedPOSTData->socialMedia)) {
 			throw new CustomMessage(__class__, Constants::FAILURE, 'Empty data', 1006, '\'socialMedia\' value is empty');
 		} else if (empty($this->mJSONDecodedPOSTData->socialMediaID)) {
 			throw new CustomMessage(__class__, Constants::FAILURE, 'Empty data', 1006, '\'socialMediaID\' value is empty');
@@ -22,15 +22,15 @@ class LoginTask extends Task
 			throw new CustomMessage(__class__, Constants::FAILURE, 'Empty data', 1006, '\'name\' value is empty');
 		} else if (empty($this->mJSONDecodedPOSTData->email)) {
 			throw new CustomMessage(__class__, Constants::FAILURE, 'Empty data', 1006, '\'email\' value is empty');
-		}
-		$this->mJSONDecodedPOSTData->pictureURL = !empty($this->mJSONDecodedPOSTData->pictureURL) ? $this->mJSONDecodedPOSTData->pictureURL : null;
+		}*/
+		/*$this->mJSONDecodedPOSTData->pictureURL = !empty($this->mJSONDecodedPOSTData->pictureURL) ? $this->mJSONDecodedPOSTData->pictureURL : null;*/
 		
 		// sanitize
-		$this->mJSONDecodedPOSTData->socialMedia = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->socialMedia));
+		/*$this->mJSONDecodedPOSTData->socialMedia = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->socialMedia));
 		$this->mJSONDecodedPOSTData->socialMediaID = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->socialMediaID));
 		$this->mJSONDecodedPOSTData->name = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->name));
 		$this->mJSONDecodedPOSTData->email = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->email));
-		$this->mJSONDecodedPOSTData->pictureURL = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->pictureURL));
+		$this->mJSONDecodedPOSTData->pictureURL = htmlspecialchars(strip_tags($this->mJSONDecodedPOSTData->pictureURL));*/
 	}
 	private function updateIfExists() : bool
 	{
@@ -39,7 +39,7 @@ class LoginTask extends Task
 			$row = $result->fetch_assoc();
 			
 			$stmt = $this->mConnection->prepare(
-				'Update `users` set `socialMedia`=?, `socialMediaID`=?, `name`=?, `email`=?, `pictureURL`=? where `id`=?'
+				'Update `users` set `socialMedia`=?, `socialMediaID`=?, `name`=? where `id`=?'
 			);
 			if (false === $stmt) {
 				throw new CustomMessage(
@@ -51,12 +51,10 @@ class LoginTask extends Task
 				);
 			}
 			$bindResult = $stmt->bind_param(
-				'sssssi',
+				'ssss',
 				$this->mJSONDecodedPOSTData->socialMedia,
 				$this->mJSONDecodedPOSTData->socialMediaID,
 				$this->mJSONDecodedPOSTData->name,
-				$this->mJSONDecodedPOSTData->email,
-				$this->mJSONDecodedPOSTData->pictureURL,
 				$row['id']
 			);
 			if (false === $bindResult) {
@@ -89,7 +87,7 @@ class LoginTask extends Task
 	{
 		$id = date('dmYhis');
 		$stmt = $this->mConnection->prepare(
-			'INSERT INTO `users`(`id`, `socialMedia`, `socialMediaID`, `name`, `email`, `pictureURL`) values (?, ?, ?, ?, ?, ?)'
+			'INSERT INTO `users`(`id`, `socialMedia`, `socialMediaID`, `name`) values (?, ?, ?, ?)'
 		);
 		if (false === $stmt) {
 			throw new CustomMessage(
@@ -101,13 +99,11 @@ class LoginTask extends Task
 			);
 		}
 		$bindResult = $stmt->bind_param(
-			'isssss',
+			'ssss',
 			$id,
 			$this->mJSONDecodedPOSTData->socialMedia,
 			$this->mJSONDecodedPOSTData->socialMediaID,
-			$this->mJSONDecodedPOSTData->name,
-			$this->mJSONDecodedPOSTData->email,
-			$this->mJSONDecodedPOSTData->pictureURL
+			$this->mJSONDecodedPOSTData->name
 		);
 		if (false === $bindResult) {
 			throw new CustomMessage(

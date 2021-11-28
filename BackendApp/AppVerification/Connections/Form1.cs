@@ -19,18 +19,19 @@ namespace Connections
         {
             InitializeComponent();
 
-            InitMysqlConnection();
-
-            InitTasks();
-
-            if (0 == tasks.Count)
+            if (InitMysqlConnection())
             {
-                MessageBox.Show("No task pending");
-                this.Load += CloseForm;
-            }
-            else
-            {
-                DoTask();
+                InitTasks();
+
+                if (0 == tasks.Count)
+                {
+                    MessageBox.Show("No task pending");
+                    this.Load += CloseForm;
+                }
+                else
+                {
+                    DoTask();
+                }
             }
         }
 
@@ -184,11 +185,11 @@ namespace Connections
             return biodatas;
         }
 
-        private void UpdateDB()
+        private bool UpdateDB()
         {
             try
             {
-                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + "',`profession`='" + comboBox2.SelectedItem + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
+                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + "',`profession`='" + (comboBox2.SelectedItem.Equals("None") ? "" : comboBox2.SelectedItem) + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
                 using (MySqlCommand cmd = new MySqlCommand(query, mySqlConnection))
                 {
                     cmd.ExecuteNonQuery();
@@ -214,15 +215,18 @@ namespace Connections
             {
                 MessageBox.Show(ex.Message.ToString());
                 this.Load += CloseForm;
+                return false;
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message.ToString());
                 this.Load += CloseForm;
+                return false;
             }
+            return true;
         }
 
-        private void InitMysqlConnection()
+        private bool InitMysqlConnection()
         {
             try
             {
@@ -239,7 +243,9 @@ namespace Connections
             {
                 MessageBox.Show(ex.Message.ToString());
                 this.Load += CloseForm;
+                return false;
             }
+            return true;
         }
 
         private void CloseForm(object sender, EventArgs e)
@@ -400,28 +406,36 @@ namespace Connections
 
         private void Button2_Click(object sender, EventArgs e)
         {
-            if (0 == textBox1.Text.Length)
+            if(!mySqlConnection.State.Equals("Open") && !InitMysqlConnection())
+            {
+                return;
+            }
+
+            bool isValid = comboBox1.SelectedItem.ToString() == "Valid";
+
+            if (isValid && 0 == textBox1.Text.Length)
             {
                 MessageBox.Show("Please enter name");
             }
             else
             {
-                UpdateDB();
-
-                tasks.RemoveAt(currentTask);
-                if (0 == tasks.Count)
+                if (UpdateDB())
                 {
-                    MessageBox.Show("No task pending");
-                    button1.Enabled = false;
-                    button2.Enabled = false;
-                    button3.Enabled = false;
-                    button5.Enabled = false;
-                }
-                else
-                {
-                    // go for next task
-                    currentTask = currentTask % tasks.Count;
-                    DoTask();
+                    tasks.RemoveAt(currentTask);
+                    if (0 == tasks.Count)
+                    {
+                        MessageBox.Show("No task pending");
+                        button1.Enabled = false;
+                        button2.Enabled = false;
+                        button3.Enabled = false;
+                        button5.Enabled = false;
+                    }
+                    else
+                    {
+                        // go for next task
+                        currentTask = currentTask % tasks.Count;
+                        DoTask();
+                    }
                 }
             }
         }
