@@ -10,5 +10,5 @@
   "variousMartialStatus": [ "Single", "Widow", "Divorcee" ],
   "sampradayas": [ "Shwetambar", "Digambar" ],
   "variousReasons": [ "Valid", "Photos not valid", "Biodata not valid", "Duplicate" ],
-  "professions": [ "Advocate", "Businessman", "Designer", "Doctor", "Engineer", "Manager", "Professor", "Others", "None" ]
+  "professions": [ "Advocate", "Businessman", "Chartered Accountant", "Designer", "Doctor", "Engineer", "Manager", "Professor", "Others" ]
 }
