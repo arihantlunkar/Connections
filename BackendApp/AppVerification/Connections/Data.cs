@@ -24,7 +24,6 @@ namespace Connections
 
     public class Data
     {
-        public string[] places { get; set; }
         public string[] ages { get; set; }
         public string[] heights { get; set; }
         public string[] occupations { get; set; }

@@ -14,6 +14,7 @@ namespace Connections
         List<Task> tasks = new List<Task>();
         int currentTask = 0;
         int currentImageCounter = 0;
+        Dictionary<String, String> cityStatePairs = new Dictionary<string, string>();
 
         public Form1()
         {
@@ -189,7 +190,7 @@ namespace Connections
         {
             try
             {
-                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + "',`profession`='" + ("None" == comboBox2.SelectedItem.ToString()  ? "" : comboBox2.SelectedItem)  + "',`detailedProfession`='" + textBox4.Text + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
+                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + ", " + textBox5.Text + "',`profession`='" + ("None" == comboBox2.SelectedItem.ToString()  ? "" : comboBox2.SelectedItem)  + "',`detailedProfession`='" + textBox4.Text + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
                 using (MySqlCommand cmd = new MySqlCommand(query, mySqlConnection))
                 {
                     cmd.ExecuteNonQuery();
@@ -258,12 +259,30 @@ namespace Connections
         {
             try
             {
+                using (StreamReader r = new StreamReader(@"india_cities_states.csv"))
+                {
+                    comboBox4.Items.Clear();
+
+                    int i = 0;
+                    while (!r.EndOfStream)
+                    {
+                        var line = r.ReadLine();
+                        if (i > 0)
+                        {
+                            comboBox4.Items.Add(line.Split(',')[0]);
+                            cityStatePairs[line.Split(',')[0]] = line.Split(',')[1];
+                        }
+                        ++i;
+                    }
+                }
+
                 using (StreamReader r = new StreamReader(@"data.json"))
                 {
                     Data data = JsonConvert.DeserializeObject<Data>(r.ReadToEnd());
 
                     textBox1.Clear();
                     textBox4.Clear();
+                    textBox5.Clear();
                     textBox3.Clear();
 
                     comboBox1.Items.Clear();
@@ -276,12 +295,6 @@ namespace Connections
                     for (int i = 0; i < data.professions.Length; ++i)
                     {
                         comboBox2.Items.Add(data.professions[i]);
-                    }
-
-                    comboBox4.Items.Clear();
-                    for (int i = 0; i < data.places.Length; ++i)
-                    {
-                        comboBox4.Items.Add(data.places[i]);
                     }
 
                     comboBox5.Items.Clear();
@@ -380,6 +393,7 @@ namespace Connections
             comboBox12.Select(0, 0);
             textBox2.Select(0, 0);
             textBox4.Select(0, 0);
+            textBox5.Select(0, 0);
 
             // Disable timer
             timerRemoveBlueHighlight.Enabled = false;
@@ -408,6 +422,7 @@ namespace Connections
                -1 == comboBox11.SelectedIndex ||
                -1 == comboBox12.SelectedIndex ||
                 0 == textBox1.Text.Length ||
+                0 == textBox5.Text.Length ||
                 0 == checkedListBox1.CheckedItems.Count)
             {
                 MessageBox.Show("Please enter all fields");
@@ -450,6 +465,11 @@ namespace Connections
             textBox2.Text = ConfigurationSettings.AppSettings["backendUrl"] + "/" + tasks[currentTask].info.biodataUrl;
             pictureBox1.ImageLocation = ConfigurationSettings.AppSettings["backendUrl"] + "/" + tasks[currentTask].info.images[0];
             label12.Text = "Displaying image " + (currentImageCounter + 1) + " of " + tasks[currentTask].info.images.Count;
+        }
+
+        private void OnCityChange(object sender, EventArgs e)
+        {
+            textBox5.Text = cityStatePairs[comboBox4.SelectedItem.ToString()];
         }
     }
 }
