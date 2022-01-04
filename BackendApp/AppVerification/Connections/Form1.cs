@@ -189,7 +189,7 @@ namespace Connections
         {
             try
             {
-                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + "',`profession`='" + (comboBox2.SelectedItem.Equals("None") ? "" : comboBox2.SelectedItem) + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
+                string query = "UPDATE `biodata` SET `name`='" + textBox1.Text + "',`additionalDetails`='" + textBox3.Text + "',`place`='" + comboBox4.SelectedItem + "',`profession`='" + ("None" == comboBox2.SelectedItem.ToString()  ? "" : comboBox2.SelectedItem)  + "',`detailedProfession`='" + textBox4.Text + "',`age`='" + comboBox5.SelectedItem + "',`height`=\"" + comboBox6.SelectedItem + "\",`occupation`='" + comboBox7.SelectedItem + "',`lookingFor`='" + comboBox9.SelectedItem + "',`dosha`='" + comboBox10.SelectedItem + "',`maritialStatus`='" + comboBox11.SelectedItem + "',`sampradaya`='" + comboBox12.SelectedItem + "' WHERE `id`='" + tasks[currentTask].uploadedBy.uploadTime + "'";
                 using (MySqlCommand cmd = new MySqlCommand(query, mySqlConnection))
                 {
                     cmd.ExecuteNonQuery();
@@ -263,6 +263,7 @@ namespace Connections
                     Data data = JsonConvert.DeserializeObject<Data>(r.ReadToEnd());
 
                     textBox1.Clear();
+                    textBox4.Clear();
                     textBox3.Clear();
 
                     comboBox1.Items.Clear();
@@ -284,9 +285,9 @@ namespace Connections
                     }
 
                     comboBox5.Items.Clear();
-                    for (int i = data.minAge; i < data.maxAge; ++i)
+                    for (int i = 0; i < data.ages.Length; ++i)
                     {
-                        comboBox5.Items.Add(i);
+                        comboBox5.Items.Add(data.ages[i]);
                     }
 
                     comboBox6.Items.Clear();
@@ -330,22 +331,6 @@ namespace Connections
                     {
                         comboBox12.Items.Add(data.sampradayas[i]);
                     }
-
-                    comboBox1.SelectedItem = data.defaultSelectedReason;
-                    comboBox2.SelectedItem = data.defaultProfession;
-                    comboBox4.SelectedItem = data.defaultSelectedPlace;
-                    comboBox5.SelectedItem = data.defaultSelectedAge;
-                    comboBox6.SelectedItem = data.defaultSelectedHeight;
-                    comboBox7.SelectedItem = data.defaultSelectedOccupation;
-                    for(int i=0;i< checkedListBox1.Items.Count;++i)
-                    {
-                        checkedListBox1.SetItemChecked(i, false);
-                    }
-                    checkedListBox1.SetItemChecked(Array.IndexOf(data.variousEducation, data.defaultSelectedEducation), true);
-                    comboBox9.SelectedItem = data.defaultSelectedLookingFor;
-                    comboBox10.SelectedItem = data.defaultSelectedDosha;
-                    comboBox11.SelectedItem = data.defaultSelectedMaritalStatus;
-                    comboBox12.SelectedItem = data.defaultSelectedSampradaya;
                 }
             }
             catch (IOException ex)
@@ -394,6 +379,7 @@ namespace Connections
             comboBox11.Select(0, 0);
             comboBox12.Select(0, 0);
             textBox2.Select(0, 0);
+            textBox4.Select(0, 0);
 
             // Disable timer
             timerRemoveBlueHighlight.Enabled = false;
@@ -411,31 +397,39 @@ namespace Connections
                 return;
             }
 
-            bool isValid = comboBox1.SelectedItem.ToString() == "Valid";
-
-            if (isValid && 0 == textBox1.Text.Length)
+            if(-1 == comboBox1.SelectedIndex ||
+               -1 == comboBox2.SelectedIndex || 
+               -1 == comboBox4.SelectedIndex ||
+               -1 == comboBox5.SelectedIndex ||
+               -1 == comboBox6.SelectedIndex ||
+               -1 == comboBox7.SelectedIndex ||
+               -1 == comboBox9.SelectedIndex ||
+               -1 == comboBox10.SelectedIndex ||
+               -1 == comboBox11.SelectedIndex ||
+               -1 == comboBox12.SelectedIndex ||
+                0 == textBox1.Text.Length ||
+                0 == checkedListBox1.CheckedItems.Count)
             {
-                MessageBox.Show("Please enter name");
+                MessageBox.Show("Please enter all fields");
+                return;
             }
-            else
+
+            if (UpdateDB())
             {
-                if (UpdateDB())
+                tasks.RemoveAt(currentTask);
+                if (0 == tasks.Count)
                 {
-                    tasks.RemoveAt(currentTask);
-                    if (0 == tasks.Count)
-                    {
-                        MessageBox.Show("No task pending");
-                        button1.Enabled = false;
-                        button2.Enabled = false;
-                        button3.Enabled = false;
-                        button5.Enabled = false;
-                    }
-                    else
-                    {
-                        // go for next task
-                        currentTask = currentTask % tasks.Count;
-                        DoTask();
-                    }
+                    MessageBox.Show("No task pending");
+                    button1.Enabled = false;
+                    button2.Enabled = false;
+                    button3.Enabled = false;
+                    button5.Enabled = false;
+                }
+                else
+                {
+                    // go for next task
+                    currentTask = currentTask % tasks.Count;
+                    DoTask();
                 }
             }
         }

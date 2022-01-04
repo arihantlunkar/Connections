@@ -10,6 +10,10 @@ class DisplayTask extends Task
 		if ($result && $result->num_rows > 0) 
 		{
     		while($r = $result->fetch_assoc()) {
+				if(!empty($r['detailedProfession']))
+				{
+					$r['profession'] = $r['detailedProfession'];
+				}
     			$rows[] = $r;
     		}
 		}
