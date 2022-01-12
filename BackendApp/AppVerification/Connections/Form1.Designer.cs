@@ -80,6 +80,7 @@
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.label25 = new System.Windows.Forms.Label();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.label24 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -99,7 +100,6 @@
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.label13 = new System.Windows.Forms.Label();
             this.timerRemoveBlueHighlight = new System.Windows.Forms.Timer(this.components);
-            this.textBox5 = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel5.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -910,6 +910,15 @@
             this.comboBox4.TabIndex = 0;
             this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.OnCityChange);
             // 
+            // textBox5
+            // 
+            this.textBox5.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.textBox5.Enabled = false;
+            this.textBox5.Location = new System.Drawing.Point(493, 3);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(260, 30);
+            this.textBox5.TabIndex = 14;
+            // 
             // tableLayoutPanel10
             // 
             this.tableLayoutPanel10.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1170,15 +1179,6 @@
             // timerRemoveBlueHighlight
             // 
             this.timerRemoveBlueHighlight.Tick += new System.EventHandler(this.TimerRemoveBlueHighlight_Tick);
-            // 
-            // textBox5
-            // 
-            this.textBox5.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.textBox5.Enabled = false;
-            this.textBox5.Location = new System.Drawing.Point(493, 3);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(260, 30);
-            this.textBox5.TabIndex = 14;
             // 
             // Form1
             // 

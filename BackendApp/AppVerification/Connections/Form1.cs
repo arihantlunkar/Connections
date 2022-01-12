@@ -14,7 +14,7 @@ namespace Connections
         List<Task> tasks = new List<Task>();
         int currentTask = 0;
         int currentImageCounter = 0;
-        Dictionary<String, String> cityStatePairs = new Dictionary<string, string>();
+        List<string> states = new List<string>();
 
         public Form1()
         {
@@ -259,6 +259,22 @@ namespace Connections
         {
             try
             {
+                comboBox1.SelectedIndex = -1;
+                comboBox2.SelectedIndex = -1;
+                comboBox4.SelectedIndex = -1;
+                comboBox5.SelectedIndex = -1;
+                comboBox6.SelectedIndex = -1;
+                comboBox7.SelectedIndex = -1;
+                comboBox9.SelectedIndex = -1;
+                comboBox10.SelectedIndex = -1;
+                comboBox11.SelectedIndex = -1;
+                comboBox12.SelectedIndex = -1;
+                textBox1.Clear();
+                textBox3.Clear();
+                textBox4.Clear();
+                textBox5.Clear();
+                checkedListBox1.SelectedIndex = -1;
+
                 using (StreamReader r = new StreamReader(@"india_cities_states.csv"))
                 {
                     comboBox4.Items.Clear();
@@ -270,7 +286,7 @@ namespace Connections
                         if (i > 0)
                         {
                             comboBox4.Items.Add(line.Split(',')[0]);
-                            cityStatePairs[line.Split(',')[0]] = line.Split(',')[1];
+                            states.Add(line.Split(',')[1]);
                         }
                         ++i;
                     }
@@ -469,7 +485,8 @@ namespace Connections
 
         private void OnCityChange(object sender, EventArgs e)
         {
-            textBox5.Text = cityStatePairs[comboBox4.SelectedItem.ToString()];
+            if(-1 != comboBox4.SelectedIndex)
+                textBox5.Text = states[comboBox4.SelectedIndex];
         }
     }
 }
